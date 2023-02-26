@@ -77,43 +77,70 @@
       })
     }
 
-      function purgeAllTables () {
-        if (!confirm('Are you sure you want to purge all tables?')) {
-          return
-        }
-        fetch('/tables-purge', {
-          method: 'delete'
-        }).then((response) => {
-          if (!response.ok) {
-            throw new Error
-          }
-          response.text().then(text => {
-            window.alert(text)
-            location.reload()
-          })
-        }).catch(() => {
-          window.alert('There was an error when attempting to purge all tables.')
-        })
+    function exportTable(TableName) {
+      if (!confirm(`Are you sure you want to export all records from table "${TableName}" ?`)) {
+        return
       }
 
-      function deleteAllTables () {
-        if (!confirm('Are you sure you want to delete all tables?')) {
-          return
+      document.getElementById(`export-${TableName}`).innerText = 'Wait...';
+
+      fetch(`/tables/${TableName}/export`, {
+        method: 'get'
+      }).then((response) => {
+        if (!response.ok) {
+          throw new Error
         }
-        fetch('/tables', {
-          method: 'delete'
-        }).then((response) => {
-          if (!response.ok) {
-            throw new Error
-          }
-          response.text().then(text => {
-            window.alert(text)
-            location.reload()
-          })
-        }).catch(() => {
-          window.alert('There was an error when attempting to delete all tables.')
-        })
+        const elem = document.getElementById(`export-${TableName}-dl-trigger`);
+
+        response.json()
+        .then(data => {
+          elem.href = 'data:application/json;charset=UTF-8;base64,' + btoa(JSON.stringify(data, null, 2));
+          elem.download = `${TableName}-export.json`;
+          elem.click();
+          document.getElementById(`export-${TableName}`).innerText = 'Export';
+        });
+      }).catch(() => {
+        window.alert('There was an error when attempting to export the table.')
+      })
+    }
+
+    function purgeAllTables () {
+      if (!confirm('Are you sure you want to purge all tables?')) {
+        return
       }
+      fetch('/tables-purge', {
+        method: 'delete'
+      }).then((response) => {
+        if (!response.ok) {
+          throw new Error
+        }
+        response.text().then(text => {
+          window.alert(text)
+          location.reload()
+        })
+      }).catch(() => {
+        window.alert('There was an error when attempting to purge all tables.')
+      })
+    }
+
+    function deleteAllTables () {
+      if (!confirm('Are you sure you want to delete all tables?')) {
+        return
+      }
+      fetch('/tables', {
+        method: 'delete'
+      }).then((response) => {
+        if (!response.ok) {
+          throw new Error
+        }
+        response.text().then(text => {
+          window.alert(text)
+          location.reload()
+        })
+      }).catch(() => {
+        window.alert('There was an error when attempting to delete all tables.')
+      })
+    }
 
     </script>
 
@@ -127,6 +154,11 @@
           <a href='/tables/<%= data[i].TableName %>'>
             <%= data[i].TableName %>
           </a>
+          <a href="#" id="export-<%= data[i].TableName %>-dl-trigger" style="display: none"></a>
+          <a href="#" id="export-<%= data[i].TableName %>" onClick="exportTable('<%= data[i].TableName %>'); return false"
+            class="badge badge-info badge-pill float-right ml-1">
+           Export
+         </a>
           <a href="#" onClick="deleteTable('<%= data[i].TableName %>'); return false"
               class="badge badge-danger badge-pill float-right ml-1">
             Delete
