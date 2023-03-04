@@ -78,9 +78,9 @@
     }
 
     function exportTable(TableName) {
-      if (!confirm(`Are you sure you want to export all records from table "${TableName}" ?`)) {
+      /*if (!confirm(`Are you sure you want to export all records from table "${TableName}" ?`)) {
         return
-      }
+      }*/
 
       document.getElementById(`export-${TableName}`).innerText = 'Wait...';
 
