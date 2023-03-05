@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang='en' data-theme="<%= theme %>">
+<html lang='en' data-theme="<%= theme %>" data-export-format="<%= exportFormat %>">
 
 <head>
   <%- include('partials/head') %>
@@ -154,7 +154,7 @@
           <a href='/tables/<%= data[i].TableName %>'>
             <%= data[i].TableName %>
           </a>
-          <a href="#" id="export-<%= data[i].TableName %>-dl-trigger" style="display: none"></a>
+          <a href="#" id="export-<%= data[i].TableName %>-dl-trigger" class="d-none"></a>
           <a href="#" id="export-<%= data[i].TableName %>" onClick="exportTable('<%= data[i].TableName %>'); return false"
             class="badge badge-info badge-pill float-right ml-1">
            Export
